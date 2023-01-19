@@ -15,44 +15,41 @@ namespace UiPathTeam.StatusProgress.Activities
         #region Properties
 
         [Category("Input"), Description("Message to be displayed.  Default: Status Progress")]
-        public InArgument<String> Message { get; set; } = "Status Progress";
+        public InArgument<String> Message { get; set; } = new InArgument<String>("Status Progress");
 
-        [Category("Input"), Description("Background opacity.  Value should be betwen 0 and 1.  Default: 0.8")]
-        public InArgument<Double> Opacity { get; set; } = 0.8;
+        [Category("Input"), Description("Background opacity.  Value should be betwen 0 and 1.  Default: 0")]
+        public InArgument<Double> Opacity { get; set; } = new InArgument<Double>(0.8);
 
         [Category("Input"), Description("Location on the screen.  Vertical options are \"center, top, bottom\" , and Horizontal options are \"center, right, and left\" .  Provide a string array indicating desired location.  Default: {\"center\",\"center\"}")]
-        public InArgument<String[]> Location { get; set; } = new String[] { "center", "center" };
+        public InArgument<String[]> Location { get; set; }
 
-        [Category("Input"), Description("Progress to display.  Set between 0 and 1 to display progrss bar.  Negative (-1) will hide the progress bar.  Default: -1")]
-        public InArgument<Double> Progress { get; set; } = -1;
+        [Category("Input"), Description("Progress to display.  Set between 0 and 1 to display progrss bar.  Negative (-1) will hide the progress bar.  Default: 0")]
+        public InArgument<Double> Progress { get; set; } = new InArgument<Double>(-1);
 
         [Category("Input"), Description("Show control box. Default: False")]
-        public InArgument<Boolean> Mobile { get; set; } = false;
+        public InArgument<Boolean> Mobile { get; set; }
 
         [Category("Input"), Description("Set to True if you want the form to close automatically when the progress bar reaches 100%.  Default: False")]
-        public InArgument<Boolean> ProgressAutoClose { get; set; } = false;
+        public InArgument<Boolean> ProgressAutoClose { get; set; }
 
-        [Category("Input"), Description("Bring progress bar to the front of all other windows.  Default: True")]
-        public InArgument<Boolean> Top { get; set; } = true;
+        [Category("Input"), Description("Bring progress bar to the front of all other windows.  Default: False")]
+        public InArgument<Boolean> Top { get; set; } = new InArgument<Boolean>(true);
 
-        [Category("Input"), Description("Background Color.  Default: Black")]
-        public InArgument<Color> ColorBackground { get; set; } = System.Drawing.Color.Black;
+        [Category("Input"), Description("Background Color.  Default: System.Drawing.Color.Black")]
+        public InArgument<Color> ColorBackground { get; set; }
 
-        [Category("Input"), Description("Border Color.  Default: OrangeRed")]
-        public InArgument<Color> ColorBorder { get; set; } = System.Drawing.Color.OrangeRed;
+        [Category("Input"), Description("Border Color.  Default: System.Drawing.Color.OrangeRed")]
+        public InArgument<Color> ColorBorder { get; set; }
 
-        [Category("Input"), Description("Text Color.  Default: White")]
-        public InArgument<Color> ColorText { get; set; } = System.Drawing.Color.White;
+        [Category("Input"), Description("Text Color.  Default: System.Drawing.Color.White")]
+        public InArgument<Color> ColorText { get; set; }
 
-        [Category("Input"), Description("Close Button Color.  Default: Red")]
-        public InArgument<Color> ColorButton { get; set; } = System.Drawing.Color.Red;
+        [Category("Input"), Description("Close Button Color.  Default: System.Drawing.Color.Red")]
+        public InArgument<Color> ColorButton { get; set; }
 
-        [Category("Input"), Description("Required Parameter.  This stores the container for the  status message.  It enables you to update the same status bar.  Failure to provide it will result in multiple status messsage objects after each call.")]
+        [Category("Input/Output"), Description("Required Parameter.  This stores the container for the  status message.  It enables you to update the same status bar.  Failure to provide it will result in multiple status messsage objects after each call.")]
         [RequiredArgument]
         public InOutArgument<Form> Container { get; set; }
-
-        [Category("Input"), Description("Log Message with level Debug.  Default: False")]
-        public InArgument<Boolean> Verbose { get; set; } = false;
 
         #endregion
 
@@ -60,6 +57,8 @@ namespace UiPathTeam.StatusProgress.Activities
 
         protected override void Execute(NativeActivityContext context)
         {
+            ApplyDefaults(context);
+
             if (Message.Get(context).Length > 120)
             {
                 Message.Set(context, Message.Get(context).Substring(0, 120));
@@ -253,6 +252,36 @@ namespace UiPathTeam.StatusProgress.Activities
             if (Container.Get(context) == null)
             {
                 frm.Show();
+            }
+
+            Container.Set(context, frm);
+        }
+
+        private void ApplyDefaults(NativeActivityContext context)
+        {
+            Message.Set(context, Message.Get(context) == null ? "Status Progress" : Message.Get(context));
+
+            if (Opacity.Get(context) == 0)
+            {
+                Console.WriteLine("Opacity set to 0, Progress Status bar will not be displayed!");
+            }
+
+            ColorBackground.Set(context, ColorBackground.Get(context) == null ? System.Drawing.Color.Black : ColorBackground.Get(context));
+            ColorBorder.Set(context, ColorBorder.Get(context) == null ? System.Drawing.Color.OrangeRed : ColorBorder.Get(context));
+            ColorText.Set(context, ColorText.Get(context) == null ? System.Drawing.Color.White : ColorText.Get(context));
+            ColorButton.Set(context, ColorButton.Get(context) == null ? System.Drawing.Color.Red : ColorButton.Get(context));
+        }
+
+        #endregion
+
+        #region CheckProperties
+
+        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        {
+            base.CacheMetadata(metadata);
+            if (Container == null)
+            {
+                metadata.AddValidationError($"Container must be set before LiveStatus activity '{DisplayName}' can be used.");
             }
         }
 

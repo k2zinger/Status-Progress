@@ -14,40 +14,40 @@ namespace UiPathTeam.StatusProgress.Activities
         #region Properties
 
         [Category("Input"), Description("Message to be displayed.  Default: Status Progress")]
-        public InArgument<String> Message { get; set; } = "Status Progress";
+        public InArgument<String> Message { get; set; } = new InArgument<String>("Status Progress");
 
-        [Category("Input"), Description("Background opacity.  Value should be betwen 0 and 1.  Default: 0.8")]
-        public InArgument<Double> Opacity { get; set; } = 0.8;
+        [Category("Input"), Description("Background opacity.  Value should be betwen 0 and 1.  Default: 0")]
+        public InArgument<Double> Opacity { get; set; } = new InArgument<Double>(0.8);
 
         [Category("Input"), Description("Location on the screen.  Vertical options are \"center, top, bottom\" , and Horizontal options are \"center, right, and left\" .  Provide a string array indicating desired location.  Default: {\"center\",\"center\"}")]
-        public InArgument<String[]> Location { get; set; } = new String[] { "center", "center" };
+        public InArgument<String[]> Location { get; set; }
 
         [Category("Input"), Description("Display time in seconds before closing automatically.  Set to zero to wait on user input.  Default: 0")]
-        public InArgument<Double> DisplayTime { get; set; } = 0;
+        public InArgument<Double> DisplayTime { get; set; }
 
-        [Category("Input"), Description("Progress to display.  Set between 0 and 1 to display progrss bar.  Negative (-1) will hide the progress bar.  Default: -1")]
-        public InArgument<Double> Progress { get; set; } = -1;
+        [Category("Input"), Description("Progress to display.  Set between 0 and 1 to display progrss bar.  Negative (-1) will hide the progress bar.  Default: 0")]
+        public InArgument<Double> Progress { get; set; } = new InArgument<Double>(-1);
 
         [Category("Input"), Description("Show control box. Default: False")]
-        public InArgument<Boolean> Mobile { get; set; } = false;
+        public InArgument<Boolean> Mobile { get; set; }
 
-        [Category("Input"), Description("Bring progress bar to the front of all other windows.  Default: True")]
-        public InArgument<Boolean> Top { get; set; } = true;
+        [Category("Input"), Description("Bring progress bar to the front of all other windows.  Default: False")]
+        public InArgument<Boolean> Top { get; set; } = new InArgument<Boolean>(true);
 
-        [Category("Input"), Description("Border Color.  Default: OrangeRed")]
-        public InArgument<Color> ColorBorder { get; set; } = System.Drawing.Color.OrangeRed;
+        [Category("Input"), Description("Border Color.  Default: System.Drawing.Color.OrangeRed")]
+        public InArgument<Color> ColorBorder { get; set; }
 
-        [Category("Input"), Description("Background Color.  Default: Black")]
-        public InArgument<Color> ColorBackground { get; set; } = System.Drawing.Color.Black;
+        [Category("Input"), Description("Background Color.  Default: System.Drawing.Color.Black")]
+        public InArgument<Color> ColorBackground { get; set; }
 
-        [Category("Input"), Description("Text Color.  Default: White")]
-        public InArgument<Color> ColorText { get; set; } = System.Drawing.Color.White;
+        [Category("Input"), Description("Text Color.  Default: System.Drawing.Color.White")]
+        public InArgument<Color> ColorText { get; set; }
 
-        [Category("Input"), Description("Close Button Color.  Default: Red")]
-        public InArgument<Color> ColorButton { get; set; } = System.Drawing.Color.Red;
+        [Category("Input"), Description("Close Button Color.  Default: System.Drawing.Color.Red")]
+        public InArgument<Color> ColorButton { get; set; }
 
-        [Category("Input"), Description("Datatable to show in the Status message.")]
-        public InArgument<DataTable> TableData { get; set; } = new DataTable();
+        [Category("Input"), Description("Datatable to show in the Status message.  Optional.")]
+        public InArgument<DataTable> TableData { get; set; }
 
         #endregion
 
@@ -55,6 +55,8 @@ namespace UiPathTeam.StatusProgress.Activities
 
         protected override void Execute(NativeActivityContext context)
         {
+            ApplyDefaults(context);
+
             if (Message.Get(context).Length > 120)
             {
                 Message.Set(context, Message.Get(context).Substring(0, 120));
@@ -167,24 +169,27 @@ namespace UiPathTeam.StatusProgress.Activities
             int dvSRowLimit = 20;
             Label block = new Label();
             // If dt.Rows.Count > 0 Then 
-            DataGridView dgv = new DataGridView
+            if (TableData.Get(context).Rows.Count > 0)
             {
-                DataSource = TableData.Get(context),
-                AllowUserToAddRows = false,
-                Width = 60 + TableData.Get(context).Columns.Count * 100
-            };
-            dvSRowLimit = (TableData.Get(context).Rows.Count < dvSRowLimit) ? TableData.Get(context).Rows.Count : dvSRowLimit;
-            dgv.Height = 20 * dvSRowLimit + 40;
-            pnl.Controls.Add(dgv);
-            dgv.Top = lbl.Bottom;
-            dgv.Left = 35;
-            // dgv.rows(0).DefaultCellStyle.BackColor = system.Drawing.Color.Black
-            dgv.BackgroundColor = Color.Black;
-            block.Width = dgv.Width;
-            block.Height = 40;
-            block.Top = dgv.Bottom;
-            block.Text = "block";
-            pnl.Controls.Add(block);
+                DataGridView dgv = new DataGridView
+                {
+                    DataSource = TableData.Get(context),
+                    AllowUserToAddRows = false,
+                    Width = 60 + TableData.Get(context).Columns.Count * 100
+                };
+                dvSRowLimit = (TableData.Get(context).Rows.Count < dvSRowLimit) ? TableData.Get(context).Rows.Count : dvSRowLimit;
+                dgv.Height = 20 * dvSRowLimit + 40;
+                pnl.Controls.Add(dgv);
+                dgv.Top = lbl.Bottom;
+                dgv.Left = 35;
+                // dgv.rows(0).DefaultCellStyle.BackColor = system.Drawing.Color.Black
+                dgv.BackgroundColor = Color.Black;
+                block.Width = dgv.Width;
+                block.Height = 40;
+                block.Top = dgv.Bottom;
+                block.Text = "block";
+                pnl.Controls.Add(block);
+            }
             // ----------------------------------------------------------------------------
 
 
@@ -235,6 +240,23 @@ namespace UiPathTeam.StatusProgress.Activities
             frm.ShowDialog();
         }
 
+        private void ApplyDefaults(NativeActivityContext context)
+        {
+            Message.Set(context, Message.Get(context) == null ? "Status Progress" : Message.Get(context));
+
+            if (Opacity.Get(context) == 0)
+            {
+                Console.WriteLine("Opacity set to 0, Progress Status bar will not be displayed!");
+            }
+
+            ColorBackground.Set(context, ColorBackground.Get(context) == null ? System.Drawing.Color.Black : ColorBackground.Get(context));
+            ColorBorder.Set(context, ColorBorder.Get(context) == null ? System.Drawing.Color.OrangeRed : ColorBorder.Get(context));
+            ColorText.Set(context, ColorText.Get(context) == null ? System.Drawing.Color.White : ColorText.Get(context));
+            ColorButton.Set(context, ColorButton.Get(context) == null ? System.Drawing.Color.Red : ColorButton.Get(context));
+            TableData.Set(context, TableData.Get(context) == null ? new DataTable() : TableData.Get(context));
+        }
+
         #endregion
+
     }
 }

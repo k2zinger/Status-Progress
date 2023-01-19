@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop" ToolsVersion="Current">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,8 +7,9 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Status_Progress</RootNamespace>
-    <AssemblyName>Status Progress</AssemblyName>
-    <TargetFrameworks>net462;net6.0-windows</TargetFrameworks>
+    <AssemblyName>UiPathTeam.StatusProgress.Activities</AssemblyName>
+	<Version>$(appveyor_build_version)</Version>
+    <TargetFrameworks>net461;net6.0-windows7.0</TargetFrameworks>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -24,6 +25,13 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	<UseWindowsForms>true</UseWindowsForms>
+	<Authors>Kristopher Kim</Authors>
+	<Description>Status Progress Activities</Description>
+	<Copyright>Copyright $(year)</Copyright>
+	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+	<PackageLicenseUrl>https://www.uipath.com/hubfs/legalspot/UiPath_Activity_License_Agreement.pdf</PackageLicenseUrl>
+	<PackageIconUrl>http://www.uipath.com/hubfs/Logos/uipath-nuget-logo.png</PackageIconUrl>
+	<PackageProjectUrl>https://github.com/k2zinger/StatusProgress</PackageProjectUrl>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,7 +50,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -59,12 +67,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows'">
-    <PackageReference Include="UiPath.Workflow">
-      <Version>6.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="UiPath.Workflow.Runtime">
-      <Version>6.0.3</Version>
-    </PackageReference>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows7.0'">
+    <PackageReference Include="UiPath.Workflow" Version="6.0.0" PrivateAssets="All" />
+    <PackageReference Include="UiPath.Workflow.Runtime" Version="6.0.0-*" PrivateAssets="All" />
   </ItemGroup>
 </Project>
