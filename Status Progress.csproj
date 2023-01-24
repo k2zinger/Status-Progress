@@ -71,4 +71,10 @@
     <PackageReference Include="UiPath.Workflow" Version="6.0.0" PrivateAssets="All" />
     <PackageReference Include="UiPath.Workflow.Runtime" Version="6.0.0-*" PrivateAssets="All" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Examples\**" />
+    <EmbeddedResource Remove="Examples\**" />
+    <None Remove="Examples\**" />
+    <Page Remove="Examples\**" />
+  </ItemGroup>
 </Project>
