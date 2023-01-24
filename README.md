@@ -1,5 +1,6 @@
 # [Status-Progress](https://marketplace.uipath.com/listings/status-progress-bar)
 [![Build status](https://ci.appveyor.com/api/projects/status/lxf7qiwkuxkl4sxj/branch/main?svg=true)](https://ci.appveyor.com/project/k2zinger/status-progress/branch/main)
+
 Provide real time progress tracking of attended RPA use cases
 
 
