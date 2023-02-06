@@ -5,7 +5,7 @@ Provide real time progress tracking of attended RPA use cases
 
 
 ## Installation
-Studio -> Manage Packages -> Community -> (Search) Status Progress -> pick the package(s) to install and click Install -> Save
+Studio -> Manage Packages -> Community -> (Search) UiPathTeam.StatusProgress.Activities -> pick the package(s) to install and click Install -> Save
 
 ## Activities
 `Close Status`: Closes the status form
